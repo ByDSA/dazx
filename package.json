@@ -1,5 +1,5 @@
 {
-  "name": "dazx",
+  "name": "@ByDSA/dazx",
   "version": "7.2.2",
   "description": "A tool for writing better scripts.",
   "type": "module",
@@ -88,5 +88,12 @@
     "singleQuote": true,
     "endOfLine": "lf"
   },
-  "repository": "bydsa/dazx"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ByDSA/dazx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ByDSA/dazx/issues"
+  },
+  "homepage": "https://github.com/ByDSA/dazx#readme"
 }
