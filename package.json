@@ -33,7 +33,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "zx": "./build/cli.js"
+    "dazx": "./build/cli.js"
   },
   "engines": {
     "node": ">= 16.0.0"
