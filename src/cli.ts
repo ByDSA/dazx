@@ -24,6 +24,7 @@ import { $, chalk, fetch, ProcessOutput } from './index.js'
 import { startRepl } from './repl.js'
 import { randomId } from './util.js'
 import { installDeps, parseDeps } from './deps.js'
+import { transformScript } from './dsa/transform.js'
 
 function printUsage() {
   // language=txt
@@ -93,7 +94,14 @@ await (async function main() {
   const filepath = firstArg.startsWith('file:///')
     ? url.fileURLToPath(firstArg)
     : resolve(firstArg)
-  await importPath(filepath)
+
+  const name = basename(filepath)
+  const ext = extname(filepath) || '.mjs'
+  const filepathTmp = join(process.cwd(), `${name}-${randomId()}${ext}`)
+  await writeAndImport(
+    await fs.readFile(filepath),
+    filepathTmp
+  )
 })().catch((err) => {
   if (err instanceof ProcessOutput) {
     console.error('Error:', err.message)
@@ -143,7 +151,7 @@ async function writeAndImport(
   filepath: string,
   origin = filepath
 ) {
-  await fs.writeFile(filepath, script.toString())
+  await fs.writeFile(filepath, transformScript(script.toString()))
   try {
     await importPath(filepath, origin)
   } finally {
