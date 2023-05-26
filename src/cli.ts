@@ -98,10 +98,7 @@ await (async function main() {
   const name = basename(filepath)
   const ext = extname(filepath) || '.mjs'
   const filepathTmp = join(process.cwd(), `${name}-${randomId()}${ext}`)
-  await writeAndImport(
-    await fs.readFile(filepath),
-    filepathTmp
-  )
+  await writeAndImport(await fs.readFile(filepath), filepathTmp)
 })().catch((err) => {
   if (err instanceof ProcessOutput) {
     console.error('Error:', err.message)
