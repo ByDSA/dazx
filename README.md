@@ -1,7 +1,7 @@
-# 🐚 zx
+# 🐚 dazx
 
 ```js
-#!/usr/bin/env zx
+#!/usr/bin/env dazx
 
 await $`cat package.json | grep name`
 
@@ -21,7 +21,7 @@ await $`mkdir /tmp/${name}`
 Bash is great, but when it comes to writing more complex scripts,
 many people prefer a more convenient programming language.
 JavaScript is a perfect choice, but the Node.js standard library
-requires additional hassle before using. The `zx` package provides
+requires additional hassle before using. The `dazx` package provides
 useful wrappers around `child_process`, escapes arguments and
 gives sensible defaults.
 
@@ -48,10 +48,10 @@ Write your scripts in a file with an `.mjs` extension in order to
 use `await` at the top level. If you prefer the `.js` extension,
 wrap your scripts in something like `void async function () {...}()`.
 
-Add the following shebang to the beginning of your `zx` scripts:
+Add the following shebang to the beginning of your `dazx` scripts:
 
 ```bash
-#!/usr/bin/env zx
+#!/usr/bin/env dazx
 ```
 
 Now you will be able to run your script like so:
@@ -61,10 +61,10 @@ chmod +x ./script.mjs
 ./script.mjs
 ```
 
-Or via the `zx` executable:
+Or via the `dazx` executable:
 
 ```bash
-zx ./script.mjs
+dazx ./script.mjs
 ```
 
 All functions (`$`, `cd`, `fetch`, etc) are available straight away
@@ -73,7 +73,7 @@ without any imports.
 Or import globals explicitly (for better autocomplete in VS Code).
 
 ```js
-import 'zx/globals'
+import 'dazx/globals'
 ```
 
 ### ``$`command` ``
@@ -151,7 +151,7 @@ class ProcessOutput {
 The output of the process is captured as-is. Usually, programs print a new
 line `\n` at the end.
 If `ProcessOutput` is used as an argument to some other `$` process,
-**zx** will use stdout and trim the new line.
+**dazx** will use stdout and trim the new line.
 
 ```js
 let date = await $`date`
@@ -237,7 +237,7 @@ await $`node --version` // => v20.2.0
 
 let version = await within(async () => {
   $.prefix += 'export NVM_DIR=$HOME/.nvm; source $NVM_DIR/nvm.sh; nvm use 16;'
-  
+
   return $`node --version`
 })
 
@@ -374,7 +374,7 @@ command substitution.
 
 Specifies verbosity. Default is `true`.
 
-In verbose mode, `zx` prints all executed commands alongside with their
+In verbose mode, `dazx` prints all executed commands alongside with their
 outputs.
 
 Or use the CLI argument `--quiet` to set `$.verbose = false`.
@@ -397,7 +397,7 @@ all `$` processes use `process.cwd()` by default (same as `spawn` behavior).
 Specifies a [logging function](src/core.ts).
 
 ```ts
-import { LogEntry, log } from 'zx/core'
+import { LogEntry, log } from 'dazx/core'
 
 $.log = (entry: LogEntry) => {
   switch (entry.kind) {
@@ -418,14 +418,14 @@ $.log = (entry: LogEntry) => {
 In [ESM](https://nodejs.org/api/esm.html) modules, Node.js does not provide
 `__filename` and `__dirname` globals. As such globals are really handy in
 scripts,
-`zx` provides these for use in `.mjs` files (when using the `zx` executable).
+`dazx` provides these for use in `.mjs` files (when using the `dazx` executable).
 
 ### `require()`
 
 In [ESM](https://nodejs.org/api/modules.html#modules_module_createrequire_filename)
 modules, the `require()` function is not defined.
-The `zx` provides `require()` function, so it can be used with imports in `.mjs`
-files (when using `zx` executable).
+The `dazx` provides `require()` function, so it can be used with imports in `.mjs`
+files (when using `dazx` executable).
 
 ```js
 let {version} = require('./package.json')
@@ -459,32 +459,32 @@ It is possible to make use of `$` and other functions via explicit imports:
 
 ```js
 #!/usr/bin/env node
-import { $ } from 'zx'
+import { $ } from 'dazx'
 
 await $`date`
 ```
 
 ### Scripts without extensions
 
-If script does not have a file extension (like `.git/hooks/pre-commit`), zx
+If script does not have a file extension (like `.git/hooks/pre-commit`), dazx
 assumes that it is
 an [ESM](https://nodejs.org/api/modules.html#modules_module_createrequire_filename)
 module.
 
 ### Markdown scripts
 
-The `zx` can execute [scripts written as markdown](docs/markdown.md):
+The `dazx` can execute [scripts written as markdown](docs/markdown.md):
 
 ```bash
-zx docs/markdown.md
+dazx docs/markdown.md
 ```
 
 ### TypeScript scripts
 
 ```ts
-import { $ } from 'zx'
+import { $ } from 'dazx'
 // Or
-import 'zx/globals'
+import 'dazx/globals'
 
 void async function () {
   await $`ls -la`
@@ -498,19 +498,19 @@ in **tsconfig.json**.
 
 ### Executing remote scripts
 
-If the argument to the `zx` executable starts with `https://`, the file will be
+If the argument to the `dazx` executable starts with `https://`, the file will be
 downloaded and executed.
 
 ```bash
-zx https://medv.io/game-of-life.js
+dazx https://medv.io/game-of-life.js
 ```
 
 ### Executing scripts from stdin
 
-The `zx` supports executing scripts from stdin.
+The `dazx` supports executing scripts from stdin.
 
 ```js
-zx << 'EOF'
+dazx << 'EOF'
 await $`pwd`
 EOF
 ```
@@ -520,7 +520,7 @@ EOF
 Evaluate the following argument as a script.
 
 ```bash
-cat package.json | zx --eval 'let v = JSON.parse(await stdin()).version; echo(v)'
+cat package.json | dazx --eval 'let v = JSON.parse(await stdin()).version; echo(v)'
 ```
 
 ### Installing dependencies via --install
@@ -532,11 +532,11 @@ import sh from 'tinysh'
 sh.say('Hello, world!')
 ```
 
-Add `--install` flag to the `zx` command to install missing dependencies
+Add `--install` flag to the `dazx` command to install missing dependencies
 automatically.
 
 ```bash
-zx --install script.mjs
+dazx --install script.mjs
 ```
 
 You can also specify needed version by adding comment with `@` after
@@ -548,11 +548,11 @@ import sh from 'tinysh' // @^1
 
 ### Executing commands on remote hosts
 
-The `zx` uses [webpod](https://github.com/webpod/webpod) to execute commands on
+The `dazx` uses [webpod](https://github.com/webpod/webpod) to execute commands on
 remote hosts.
 
 ```js
-import { ssh } from 'zx'
+import { ssh } from 'dazx'
 
 await ssh('user@host')`echo Hello, world!`
 ```
@@ -585,14 +585,14 @@ jobs:
         env:
           FORCE_COLOR: 3
         run: |
-          npx zx <<'EOF'
+          npx dazx <<'EOF'
           await $`...`
           EOF
 ```
 
 ### Canary / Beta / RC builds
 
-Impatient early adopters can try the experimental zx versions.
+Impatient early adopters can try the experimental dazx versions.
 But keep in mind: these builds are ⚠️️__beta__ in every sense.
 
 ```bash
