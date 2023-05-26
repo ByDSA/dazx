@@ -11,12 +11,12 @@ if [ -z "$NODE_PATH" ]; then
 fi
 echo "NODE_PATH: $NODE_PATH"
 
-PACKAGE="@ByDSA/dazx"
+PACKAGE="dazx"
 echo "PACKAGE: $PACKAGE"
 
 echo "Cloning $PACKAGE ..."
 sudo rm -rf "$NODE_PATH/$PACKAGE"
-git clone "https://github.com/ByDSA/dazx" "$NODE_PATH/$PACKAGE"
+sudo git clone "https://github.com/ByDSA/dazx" "$NODE_PATH/$PACKAGE"
 
 if [ -L "$NODE_PATH/$PACKAGE" ]; then
   ROOT_PACKAGE=$(readlink "$NODE_PATH/$PACKAGE")
@@ -27,11 +27,11 @@ if [ -L "$NODE_PATH/$PACKAGE" ]; then
   echo "Changing permissions of $NODE_PATH/$PACKAGE"
   sudo chmod -R 755 "$NODE_PATH/$PACKAGE"
 fi
-echo "Installing $PACKAGE dependencies ..."
+echo "Installing dependencies ..."
 cd "$NODE_PATH/$PACKAGE"
-npm i
-echo "Building $PACKAGE ..."
-npm run build
+sudo npm i
+echo "Building ..."
+sudo npm run build
 
 BIN_OUT=/usr/local/bin/dazx
 echo "Creating symlink for $BIN_OUT ..."
