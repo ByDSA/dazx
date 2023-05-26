@@ -28,7 +28,7 @@ gives sensible defaults.
 ## Install
 
 ```bash
-npm i -g zx
+curl -s https://raw.githubusercontent.com/ByDSA/dazx/main/install.sh | sudo bash
 ```
 
 **Requirement**: Node version >= 16.0.0
