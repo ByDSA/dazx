@@ -19,12 +19,12 @@ import minimist from 'minimist'
 import { createRequire } from 'node:module'
 import { basename, dirname, extname, join, resolve } from 'node:path'
 import url from 'node:url'
-import { updateArgv } from './goods.js'
-import { $, chalk, fetch, ProcessOutput } from './index.js'
-import { startRepl } from './repl.js'
-import { randomId } from './util.js'
 import { installDeps, parseDeps } from './deps.js'
 import { transformScript } from './dsa/transform.js'
+import { updateArgv } from './goods.js'
+import { $, ProcessOutput, chalk, fetch } from './index.js'
+import { startRepl } from './repl.js'
+import { randomId } from './util.js'
 
 function printUsage() {
   // language=txt
@@ -39,7 +39,7 @@ function printUsage() {
    --quiet              don't echo commands
    --shell=<path>       custom shell binary
    --prefix=<command>   prefix all commands
-   --eval=<js>, -e      evaluate script 
+   --eval=<js>, -e      evaluate script
    --install, -i        install dependencies
    --experimental       enable experimental features
    --version, -v        print current zx version
@@ -97,7 +97,8 @@ await (async function main() {
 
   const name = basename(filepath)
   const ext = extname(filepath) || '.mjs'
-  const filepathTmp = join(process.cwd(), `${name}-${randomId()}${ext}`)
+  const folderPath = dirname(filepath);
+  const filepathTmp = join(folderPath, `${name}-${randomId()}${ext}`);
   await writeAndImport(await fs.readFile(filepath), filepathTmp)
 })().catch((err) => {
   if (err instanceof ProcessOutput) {

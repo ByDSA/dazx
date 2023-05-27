@@ -12,7 +12,7 @@ function replaceDSAJs(modifiedContent: string, ...cases: string[]) {
   const NODE_PATH = process.env.NODE_PATH;
 
   cases.forEach((name) => {
-    modifiedContent = modifiedContent.replace(
+    modifiedContent = modifiedContent.replaceAll(
       'from "dazx/' + name + '";',
       'from "' + NODE_PATH + '/dazx/build/dsa/' + name + '.js";'
     )
@@ -25,7 +25,7 @@ function replaceDSAIndex(modifiedContent: string, ...cases: string[]) {
   const NODE_PATH = process.env.NODE_PATH;
 
   cases.forEach((name) => {
-    modifiedContent = modifiedContent.replace(
+    modifiedContent = modifiedContent.replaceAll(
       'from "dazx/' + name + '";',
       'from "' + NODE_PATH + '/dazx/build/dsa/' + name + '/index.js";'
     )
