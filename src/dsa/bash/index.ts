@@ -1,14 +1,7 @@
-import { $ } from '../core.js'
-import { which } from '../goods.js'
-export async function assertSudo() {
-  try {
-    $.verbose = false
-    await $`sudo echo "Sudo OK" > /dev/null 2>&1`
-    $.verbose = true
-  } catch (error) {
-    throw new Error('You need to be sudo to run this script')
-  }
-}
+
+import { which } from '../../goods.js';
+
+export * from "./sudo.js";
 
 export async function isInstalledAsync(name: string): Promise<boolean> {
   try {
