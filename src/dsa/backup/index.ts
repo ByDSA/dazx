@@ -46,7 +46,7 @@ export async function backupAsync(params: BackupParams) {
 
   if (toFolder) {
     const parentFromFolder = path.join(fromFolder, "..");
-    const backupFile = (await $`cd ${parentFromFolder} && echo $(ls | grep "${path.basename(fromFolder)}" | grep ".iso")`).stdout.trim();
+    const backupFile = (await $`cd ${parentFromFolder} && echo $(ls | grep ${path.basename(fromFolder)} | grep ".iso")`).stdout.trim();
     if (!backupFile)
       throw new Error("Backup file not found in parent folder: " + parentFromFolder);
     const origin = path.resolve(".", parentFromFolder, backupFile);
