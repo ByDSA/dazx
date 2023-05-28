@@ -1,7 +1,10 @@
 
 import { $ } from '../../core.js';
 import { which } from '../../goods.js';
+
+export * from "./input.js";
 export * from "./sudo.js";
+
 
 export async function isInstalledAsync(name: string): Promise<boolean> {
   try {

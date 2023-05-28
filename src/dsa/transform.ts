@@ -3,7 +3,7 @@ export function transformScript(source: string) {
 
   let modifiedContent = source;
   modifiedContent = replaceDSAJs(modifiedContent,"datest", "rclone");
-  modifiedContent = replaceDSAIndex(modifiedContent, "bash", "backup");
+  modifiedContent = replaceDSAIndex(modifiedContent, "bash", "backup", "node", "git", "fs");
 
   return modifiedContent
 }
