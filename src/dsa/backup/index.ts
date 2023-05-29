@@ -73,7 +73,7 @@ export async function backupAsync(params: BackupParams) {
 
   const nonBooleanFlasgsStr = Object.entries(nonBooleanFlasgs).reduce((acc, [key, value]) => {
     if (value)
-      return acc + ` --${key} ${value}`;
+      return acc + ` --${key}="${value}"`;
     return acc;
   }, "").trim();
 
