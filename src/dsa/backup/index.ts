@@ -3,10 +3,10 @@ import { $ } from "../../core.js";
 import { isInstalledAsync } from "../bash/index.js";
 import { forceSudoAsync } from "../bash/sudo.js";
 
-type BackupThisFolderParams = Omit<BackupParams, "fromFolder">;
+type BackupThisFolderParams = Omit<BackupParams, "input">;
 export async function backupThisFolderAsync(params?: BackupThisFolderParams) {
   return backupAsync({
-    fromFolder: __dirname,
+    input: __dirname,
     ...params
   });
 }
@@ -19,7 +19,10 @@ export async function forceBackupInstalledAsync() {
 
 type BackupParams = {
   type?: "iso";
-  fromFolder: string;
+  /** @deprecated **/
+  fromFolder?: string;
+  input: string;
+  /** @deprecated **/
   toFolder?: string;
   check?: boolean;
   deleteAfter?: boolean;
@@ -31,18 +34,18 @@ type BackupParams = {
 export async function backupAsync(params: BackupParams) {
   const {
     type = "iso",
-    fromFolder,
-    toFolder,
     check = false,
     deleteAfter = false,
     deleteTreeAfter = false,
     dontFollowISOs = false,
     outName,
-    outFolder
   } = params;
 
-  if (!fromFolder)
-    throw new Error("fromFolder is required");
+  const input = params.input ?? params.fromFolder;
+  const outFolder = params.toFolder ?? params.outFolder;
+
+  if (!input)
+    throw new Error("input is required");
 
   await forceSudoAsync();
 
@@ -70,15 +73,15 @@ export async function backupAsync(params: BackupParams) {
 
   flags.push(`--type ${type}`);
 
-  await $`sudo backup ${flags} ${fromFolder}`;
+  await $`sudo backup ${flags} ${input}`;
 
-  if (toFolder) {
-    const parentFromFolder = path.join(fromFolder, "..");
-    const backupFile = (await $`cd ${parentFromFolder} && echo $(ls | grep ${path.basename(fromFolder)} | grep ".iso")`).stdout.trim();
+  if (outFolder) {
+    const parentFromFolder = path.join(input, "..");
+    const backupFile = (await $`cd ${parentFromFolder} && echo $(ls | grep ${path.basename(input)} | grep ".iso")`).stdout.trim();
     if (!backupFile)
       throw new Error("Backup file not found in parent folder: " + parentFromFolder);
     const origin = path.resolve(".", parentFromFolder, backupFile);
-    const to = path.resolve(toFolder) + "/";
+    const to = path.resolve(outFolder) + "/";
     await $`sudo mv ${origin} ${to}`;
   }
 }
