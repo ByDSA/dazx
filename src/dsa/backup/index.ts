@@ -51,19 +51,19 @@ export async function backupAsync(params: BackupParams) {
 
   await forceBackupInstalledAsync();
 
-  const flags = [];
+  const booleanFlags = [];
 
   if (check)
-    flags.push("--checkAfter");
+    booleanFlags.push("--checkAfter");
 
   if (deleteAfter)
-    flags.push("--deleteAfter");
+    booleanFlags.push("--deleteAfter");
 
   if (deleteTreeAfter)
-    flags.push("--deleteTreeAfter");
+    booleanFlags.push("--deleteTreeAfter");
 
   if (dontFollowISOs)
-    flags.push("--dontFollowISOs");
+    booleanFlags.push("--dontFollowISOs");
 
     const nonBooleanFlasgs = {
       outName,
@@ -77,7 +77,9 @@ export async function backupAsync(params: BackupParams) {
     return acc;
   }, "").trim();
 
-  await $`sudo backup ${flags} ${nonBooleanFlasgsStr} ${input}`;
+  const cmd = "sudo backup " + booleanFlags.join(" ") + nonBooleanFlasgsStr + "\"input\"";
+
+  await $`${cmd}`;
 
   if (outFolder) {
     const parentFromFolder = path.join(input, "..");
