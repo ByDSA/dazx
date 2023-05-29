@@ -77,7 +77,7 @@ export async function backupAsync(params: BackupParams) {
     return acc;
   }, "").trim();
 
-  const cmd = "sudo backup " + booleanFlags.join(" ") + nonBooleanFlasgsStr + "\"input\"";
+  const cmd = "sudo backup " + booleanFlags.join(" ") + nonBooleanFlasgsStr + ' "' + input + '"';
 
   await $`${cmd}`;
 
