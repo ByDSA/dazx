@@ -65,15 +65,19 @@ export async function backupAsync(params: BackupParams) {
   if (dontFollowISOs)
     flags.push("--dontFollowISOs");
 
-  if (outName)
-    flags.push("--outName " + outName);
+    const nonBooleanFlasgs = {
+      outName,
+      outFolder,
+      type,
+    };
 
-  if (outFolder)
-    flags.push("--outFolder " + outFolder);
+  const nonBooleanFlasgsStr = Object.entries(nonBooleanFlasgs).reduce((acc, [key, value]) => {
+    if (value)
+      return acc + ` --${key} ${value}`;
+    return acc;
+  }, "").trim();
 
-  flags.push("--type " + type);
-
-  await $`sudo backup ${flags} ${input}`;
+  await $`sudo backup ${flags} ${nonBooleanFlasgsStr} ${input}`;
 
   if (outFolder) {
     const parentFromFolder = path.join(input, "..");
