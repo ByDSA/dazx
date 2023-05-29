@@ -65,19 +65,18 @@ export async function backupAsync(params: BackupParams) {
   if (dontFollowISOs)
     booleanFlags.push("--dontFollowISOs");
 
-    const nonBooleanFlasgs = {
+    const nonBooleanFlags = {
       outName,
       outFolder,
       type,
     };
 
-  const nonBooleanFlasgsStr = Object.entries(nonBooleanFlasgs).reduce((acc, [key, value]) => {
-    if (value)
-      return acc + ` --${key}="${value}"`;
-    return acc;
-  }, "").trim();
+    const nonBooleanFlagsStr = Object.entries(nonBooleanFlags)
+    .filter(([_, value]) => value !== undefined)
+    .map(([key, value]) => `--${key}="${value}"`)
+    .join(" ");
 
-  const cmd = "sudo backup " + booleanFlags.join(" ") + nonBooleanFlasgsStr + ' "' + input + '"';
+  const cmd = `sudo backup ${booleanFlags.join(" ")} ${nonBooleanFlagsStr} "${input}"`;
 
   await $`${cmd}`;
 
