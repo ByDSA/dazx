@@ -71,7 +71,7 @@ export async function backupAsync(params: BackupParams) {
   if (outFolder)
     flags.push("--outFolder " + outFolder);
 
-  flags.push(`--type ${type}`);
+  flags.push("--type " + type);
 
   await $`sudo backup ${flags} ${input}`;
 
