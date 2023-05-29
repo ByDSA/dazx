@@ -23,9 +23,23 @@ type BackupParams = {
   toFolder?: string;
   check?: boolean;
   deleteAfter?: boolean;
+  deleteTreeAfter?: boolean;
+  dontFollowISOs?: boolean;
+  outName?: string;
+  outFolder?: string;
 };
 export async function backupAsync(params: BackupParams) {
-  const { type = "iso", fromFolder, toFolder, check = false, deleteAfter = false } = params;
+  const {
+    type = "iso",
+    fromFolder,
+    toFolder,
+    check = false,
+    deleteAfter = false,
+    deleteTreeAfter = false,
+    dontFollowISOs = false,
+    outName,
+    outFolder
+  } = params;
 
   if (!fromFolder)
     throw new Error("fromFolder is required");
@@ -42,7 +56,21 @@ export async function backupAsync(params: BackupParams) {
   if (deleteAfter)
     flags.push("--deleteAfter");
 
-  await $`sudo backup ${flags} -t ${type} ${fromFolder}`;
+  if (deleteTreeAfter)
+    flags.push("--deleteTreeAfter");
+
+  if (dontFollowISOs)
+    flags.push("--dontFollowISOs");
+
+  if (outName)
+    flags.push("--outName " + outName);
+
+  if (outFolder)
+    flags.push("--outFolder " + outFolder);
+
+  flags.push(`--type ${type}`);
+
+  await $`sudo backup ${flags} ${fromFolder}`;
 
   if (toFolder) {
     const parentFromFolder = path.join(fromFolder, "..");
