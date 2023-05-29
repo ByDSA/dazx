@@ -1,6 +1,4 @@
 import { spawnSync } from "child_process";
-import path from "path";
-import { $ } from "../../core.js";
 import { isInstalledAsync } from "../bash/index.js";
 import { forceSudoAsync } from "../bash/sudo.js";
 
@@ -81,17 +79,10 @@ export async function backupAsync(params: BackupParams) {
 
   const proceso = spawnSync(cmd, { shell: true, stdio: 'inherit' });
 
-  if (proceso.error) {
-   throw proceso.error;
-  }
-
-  if (outFolder) {
-    const parentFromFolder = path.join(input, "..");
-    const backupFile = (await $`cd ${parentFromFolder} && echo $(ls | grep ${path.basename(input)} | grep ".iso")`).stdout.trim();
-    if (!backupFile)
-      throw new Error("Backup file not found in parent folder: " + parentFromFolder);
-    const origin = path.resolve(".", parentFromFolder, backupFile);
-    const to = path.resolve(outFolder) + "/";
-    await $`sudo mv ${origin} ${to}`;
+  if (proceso.error || proceso.status !== 0) {
+    if (proceso.error)
+      throw proceso.error;
+    else
+      throw new Error(`Backup failed with status code ${proceso.status}`);
   }
 }
