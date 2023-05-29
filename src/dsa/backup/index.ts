@@ -1,3 +1,4 @@
+import { spawnSync } from "child_process";
 import path from "path";
 import { $ } from "../../core.js";
 import { isInstalledAsync } from "../bash/index.js";
@@ -78,7 +79,11 @@ export async function backupAsync(params: BackupParams) {
 
   const cmd = `sudo backup ${booleanFlags.join(" ")} ${nonBooleanFlagsStr} "${input}"`;
 
-  await $`${cmd}`;
+  const proceso = spawnSync(cmd, { shell: true, stdio: 'inherit' });
+
+  if (proceso.error) {
+   throw proceso.error;
+  }
 
   if (outFolder) {
     const parentFromFolder = path.join(input, "..");
