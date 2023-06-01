@@ -11,7 +11,7 @@ export {
   backupThisFolderAsync
 } from "./backup.js";
 export {
-  backupRsync as backupRsyncAsync
+  backupRsync
 } from "./rsync.js";
 
 
