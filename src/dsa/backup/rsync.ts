@@ -12,10 +12,13 @@ type Config = {
   delete?: boolean;
   exclusion?: string[];
   ignoreTree?: boolean;
-  partialTrees?: {
-    list: PartialTree[];
-    genOnSource?: boolean;
-  };
+  tree?: {
+    partialTrees?: {
+      list: PartialTree[];
+      useSources?: boolean;
+    };
+    useSources?: boolean;
+  } & Omit<TreeGenConfig, "inputPath" | "outPath">;
 };
 
 type OptionalConfig = ExtractOptionalPropsAsRequired<Config>;
@@ -31,9 +34,13 @@ const OPTIONAL_CONFIG_DEFAULT: OptionalConfig = {
   delete: true,
   exclusion: [],
   ignoreTree: false,
-  partialTrees: {
-    list: [],
-    genOnSource: false,
+  tree: {
+    partialTrees: {
+      list: [],
+      useSources: false,
+    },
+    useSources: false,
+    dontFollowISOs: false,
   }
 };
 export function backupRsync(config: Config) {
@@ -52,9 +59,9 @@ export function backupRsync(config: Config) {
 
   spawnOrFail(cmd);
 
-  const treeGenFolder = actualConfig.partialTrees.genOnSource ? actualConfig.srcFolder : actualConfig.outFolder;
+  const treeGenFolder = actualConfig.tree.partialTrees?.useSources ? actualConfig.srcFolder : actualConfig.outFolder;
 
-  for (const partialTree of actualConfig.partialTrees.list) {
+  for (const partialTree of actualConfig.tree?.partialTrees?.list ?? []) {
     const subPath = typeof partialTree === "string" ? partialTree : partialTree.inputPath;
     const inputPath = path.resolve(treeGenFolder, subPath);
     const outPath = path.resolve(inputPath, "index.tree");
