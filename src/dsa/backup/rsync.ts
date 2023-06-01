@@ -5,6 +5,15 @@ import { TreeGenConfig, treeGen } from "./tree.js";
 import { ExtractOptionalPropsAsRequired } from "./utilityTypes.js";
 
 type PartialTree = string | TreeGenConfig;
+type TreeGenConfigForRsync = Omit<TreeGenConfig, "inputPath" | "outPath">;
+type PartialTreesType = {
+  list: PartialTree[];
+  useSources?: boolean;
+} & TreeGenConfigForRsync;
+type TreeType = {
+  partialTrees?: PartialTreesType;
+  useSources?: boolean;
+} & TreeGenConfigForRsync;
 type Config = {
   srcFolder: string;
   outFolder: string;
@@ -12,13 +21,7 @@ type Config = {
   delete?: boolean;
   exclusion?: string[];
   ignoreTree?: boolean;
-  tree?: {
-    partialTrees?: {
-      list: PartialTree[];
-      useSources?: boolean;
-    };
-    useSources?: boolean;
-  } & Omit<TreeGenConfig, "inputPath" | "outPath">;
+  tree?: TreeType;
 };
 
 type OptionalConfig = ExtractOptionalPropsAsRequired<Config>;
@@ -32,20 +35,43 @@ const DEFAULT_EXCLUSION = Object.freeze([
 const OPTIONAL_CONFIG_DEFAULT: OptionalConfig = {
   progress: true,
   delete: true,
-  exclusion: [],
+  exclusion: [] as string[],
   ignoreTree: false,
   tree: {
     partialTrees: {
-      list: [],
+      list: [] as PartialTree[],
       useSources: false,
     },
     useSources: false,
     dontFollowISOs: false,
   }
-};
+} as const;
+
+function mergeConfigWithDefaults(config: Config): Required<Config> {
+  const ret = {
+    ...OPTIONAL_CONFIG_DEFAULT,
+    ...config,
+  };
+
+  ret.exclusion = config.exclusion ? [...DEFAULT_EXCLUSION, ...config.exclusion] : [...DEFAULT_EXCLUSION];
+  ret.tree = {
+    ...OPTIONAL_CONFIG_DEFAULT.tree,
+    ...config.tree,
+  };
+  ret.tree.partialTrees = config.tree?.partialTrees ? {
+    ...(OPTIONAL_CONFIG_DEFAULT.tree.partialTrees as PartialTreesType),
+    ...config.tree?.partialTrees,
+  } : OPTIONAL_CONFIG_DEFAULT.tree.partialTrees as PartialTreesType;
+
+  ret.tree.partialTrees.list = ret.tree?.partialTrees?.list
+  ? [...ret.tree.partialTrees.list]
+  : [...OPTIONAL_CONFIG_DEFAULT.tree.partialTrees?.list as PartialTree[]];
+
+  return ret;
+}
+
 export function backupRsync(config: Config) {
-  const actualConfig: Required<Config> = {...OPTIONAL_CONFIG_DEFAULT, ...config};
-  actualConfig.exclusion = config.exclusion ? [...DEFAULT_EXCLUSION, ...config.exclusion] : [...DEFAULT_EXCLUSION];
+  const actualConfig: Required<Config> = mergeConfigWithDefaults(config);
   const excludeStr = actualConfig.exclusion.map((e) => `--exclude ${e}`).join(" ");
   let cmd = "sudo rsync -aty";
 
@@ -67,17 +93,21 @@ export function backupRsync(config: Config) {
     const outPath = path.resolve(inputPath, "index.tree");
 
     if (!fs.existsSync(outPath)) {
+      const { useSources, partialTrees, ...treeConfig } = actualConfig.tree;
       treeGen({
         inputPath,
         outPath,
-        dontFollowISOs: typeof partialTree === "object" && partialTree.dontFollowISOs,
+        ...treeConfig,
       });
     }
   }
 
   const outPath = path.resolve(actualConfig.outFolder, "index.tree");
+  const { useSources, partialTrees, ...treeConfig } = actualConfig.tree;
+
   treeGen({
     inputPath: treeGenFolder,
     outPath,
+    ...treeConfig,
   });
 }

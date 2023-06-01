@@ -1,4 +1,4 @@
-export type OptionalPropertyOf<T extends object> = Exclude<{
+export type OptionalPropertiesOf<T extends object> = Exclude<{
   [K in keyof T]: T extends Record<K, T[K]>
     ? never
     : K
@@ -6,7 +6,7 @@ export type OptionalPropertyOf<T extends object> = Exclude<{
 
 export type ExtractOptionalPropsAsRequired<T extends object> = keyof Pick<
   T,
-  OptionalPropertyOf<T>
+  OptionalPropertiesOf<T>
 > extends never
   ? never
-  : Required<Pick<T, OptionalPropertyOf<T>>>;
+  : Required<Pick<T, OptionalPropertiesOf<T>>>;
