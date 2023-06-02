@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { spawnOrFail } from "../bash/spawn.js";
+import { RsyncConfig, rsync } from "../bash/rsync.js";
 import { TreeGenConfig, treeGen } from "./tree.js";
 import { ExtractOptionalPropsAsRequired } from "./utilityTypes.js";
 
@@ -13,15 +13,14 @@ type PartialTreesType = {
 type TreeType = {
   partialTrees?: PartialTreesType;
   useSources?: boolean;
+  noGenerate?: boolean;
 } & TreeGenConfigForRsync;
 type Config = {
   srcFolder: string;
   outFolder: string;
-  progress?: boolean;
-  delete?: boolean;
   exclusion?: string[];
-  ignoreTree?: boolean;
   tree?: TreeType;
+  rsync?: Omit<RsyncConfig, "origin" | "dest">;
 };
 
 type OptionalConfig = ExtractOptionalPropsAsRequired<Config>;
@@ -33,10 +32,7 @@ const DEFAULT_EXCLUSION = Object.freeze([
 ]);
 
 const OPTIONAL_CONFIG_DEFAULT: OptionalConfig = {
-  progress: true,
-  delete: true,
   exclusion: [] as string[],
-  ignoreTree: false,
   tree: {
     partialTrees: {
       list: [] as PartialTree[],
@@ -44,6 +40,12 @@ const OPTIONAL_CONFIG_DEFAULT: OptionalConfig = {
     },
     useSources: false,
     dontFollowISOs: false,
+    noGenerate: false,
+  },
+  rsync: {
+    progress: true,
+    delete: true,
+    noPerms: false,
   }
 } as const;
 
@@ -67,23 +69,22 @@ function mergeConfigWithDefaults(config: Config): Required<Config> {
   ? [...ret.tree.partialTrees.list]
   : [...OPTIONAL_CONFIG_DEFAULT.tree.partialTrees?.list as PartialTree[]];
 
+  ret.rsync = {
+    ...OPTIONAL_CONFIG_DEFAULT.rsync,
+    ...config.rsync,
+  };
+
   return ret;
 }
 
 export function backupRsync(config: Config) {
   const actualConfig: Required<Config> = mergeConfigWithDefaults(config);
-  const excludeStr = actualConfig.exclusion.map((e) => `--exclude ${e}`).join(" ");
-  let cmd = "sudo rsync -aty";
 
-  if (actualConfig.progress)
-    cmd += " --progress";
-
-  if (actualConfig.delete)
-    cmd += " --delete";
-
-  cmd += ` ${excludeStr} "${actualConfig.srcFolder}/" "${actualConfig.outFolder}/"`;
-
-  spawnOrFail(cmd);
+  rsync({
+    ...actualConfig.rsync,
+    origin: actualConfig.srcFolder,
+    dest: actualConfig.outFolder
+  });
 
   const treeGenFolder = actualConfig.tree.partialTrees?.useSources ? actualConfig.srcFolder : actualConfig.outFolder;
 

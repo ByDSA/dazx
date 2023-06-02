@@ -12,6 +12,6 @@ export {
 } from "./backup.js";
 export {
   backupRsync
-} from "./rsync.js";
+} from "./backupRsync.js";
 
 
