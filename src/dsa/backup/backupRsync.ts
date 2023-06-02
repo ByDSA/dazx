@@ -31,7 +31,7 @@ const DEFAULT_EXCLUSION = Object.freeze([
   "/exclude/",
 ]);
 
-const OPTIONAL_CONFIG_DEFAULT: OptionalConfig = {
+const OPTIONAL_CONFIG_DEFAULT: OptionalConfig = Object.freeze<OptionalConfig>({
   exclusion: [] as string[],
   tree: {
     partialTrees: {
@@ -47,7 +47,7 @@ const OPTIONAL_CONFIG_DEFAULT: OptionalConfig = {
     delete: true,
     noPerms: false,
   }
-} as const;
+});
 
 function mergeConfigWithDefaults(config: Config): Required<Config> {
   const ret = {
