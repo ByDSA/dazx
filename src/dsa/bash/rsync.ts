@@ -25,7 +25,9 @@ export function rsync(config: Config) {
 
   cmd += ` "${config.origin}/" "${config.dest}/"`;
 
-  spawnOrFail(cmd);
+  spawnOrFail(cmd, {
+    showCommand: true,
+  });
 }
 
 export {

@@ -82,6 +82,7 @@ export function backupRsync(config: Config) {
 
   rsync({
     ...actualConfig.rsync,
+    exclude: actualConfig.exclusion,
     origin: actualConfig.srcFolder,
     dest: actualConfig.outFolder
   });

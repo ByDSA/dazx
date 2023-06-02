@@ -1,6 +1,12 @@
 import { spawnSync } from "node:child_process";
 
-export function spawnOrFail(cmd: string) {
+
+type Config = {
+  showCommand?: boolean;
+}
+export function spawnOrFail(cmd: string, config?: Config) {
+  if (config?.showCommand)
+    console.log(cmd);
   const process = spawnSync(cmd, { shell: true, stdio: 'inherit' });
 
   if (process.error || process.status !== 0) {

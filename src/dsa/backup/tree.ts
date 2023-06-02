@@ -14,7 +14,9 @@ export function treeGen(config: Config) {
   if (config.outPath)
     treeCmd += " --out \"" + config.outPath + "\"";
 
-  spawnOrFail(treeCmd);
+  spawnOrFail(treeCmd, {
+    showCommand: true,
+  });
 }
 
 export {

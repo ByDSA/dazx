@@ -65,7 +65,9 @@ export async function backupAsync(params: BackupParams) {
 
   const cmd = `sudo backup ${booleanFlags.join(" ")} ${nonBooleanFlagsStr} "${input}"`;
 
-  spawnOrFail(cmd);
+  spawnOrFail(cmd, {
+    showCommand: true,
+  });
 }
 
 
