@@ -1,7 +1,7 @@
-import chalk from "chalk";
-import { spawn } from "node:child_process";
-import { $ } from "../../core.js";
+import { $, } from "../../core.js";
+import { chalk } from "../../goods.js";
 import { isInstalledAsync } from "../bash/index.js";
+import { spawnOrFail } from "../bash/spawn.js";
 
 async function requireMongoTools() {
   if (!(await isInstalledMongoTools())) {
@@ -55,26 +55,7 @@ export async function mongodump(params: Params) {
   const cmdStr = `${cmdName} ${cmdArgs}`;
 
   console.log("cmd:", chalk.green(cmdName, cmdArgs));
-  const childProcess = spawn(cmdStr, {
-    shell: true,
-  } );
-
-  if ($.verbose) {
-    childProcess.stdout.on("data", (data) => {
-      process.stdout.write(data.toString());
-    } );
-
-    childProcess.stderr.on("data", (data) => {
-      process.stderr.write(data.toString());
-    } );
-  }
-
-  return new Promise((resolve, reject) => {
-    childProcess.on("exit", (code) => {
-      if (code === 0)
-        resolve(code);
-      else
-        reject(code);
-    } );
+  spawnOrFail(cmdStr, {
+    showCommand: $.verbose,
   } );
 }
