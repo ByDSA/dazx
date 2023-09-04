@@ -95,11 +95,18 @@ await (async function main() {
     ? url.fileURLToPath(firstArg)
     : resolve(firstArg)
 
-  const name = basename(filepath)
-  const ext = extname(filepath) || '.mjs'
-  const folderPath = dirname(filepath);
-  const filepathTmp = join(folderPath, `${name}-${randomId()}${ext}`);
-  await writeAndImport(await fs.readFile(filepath), filepathTmp)
+  const script = await fs.readFile(filepath);
+  const scriptTrans = transformScript(script.toString());
+
+  if (scriptTrans !== script.toString()) {
+    const name = basename(filepath)
+    const ext = extname(filepath) || '.mjs'
+    const folderPath = dirname(filepath);
+    const filepathTmp = join(folderPath, `${name}-${randomId()}${ext}`);
+    await writeAndImportWithoutTransform(scriptTrans, filepathTmp);
+  } else {
+    await importPath(filepath)
+  }
 })().catch((err) => {
   if (err instanceof ProcessOutput) {
     console.error('Error:', err.message)
@@ -149,7 +156,19 @@ async function writeAndImport(
   filepath: string,
   origin = filepath
 ) {
-  await fs.writeFile(filepath, transformScript(script.toString()))
+  await writeAndImportWithoutTransform(
+    transformScript(script.toString()),
+    filepath,
+    origin
+  );
+}
+
+async function writeAndImportWithoutTransform(
+  script: string | Buffer,
+  filepath: string,
+  origin = filepath
+) {
+  await fs.writeFile(filepath, script.toString())
   try {
     await importPath(filepath, origin)
   } finally {
