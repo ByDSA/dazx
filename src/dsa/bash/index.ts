@@ -32,7 +32,7 @@ export async function dirSizeAsync(directory: string) {
   return ret;
 }
 
-async function loadEnv(pathFile: string) {
+export async function loadEnv(pathFile: string) {
   console.log(`Loading env file ${pathFile}`);
 
   const envFile = fs.readFileSync(pathFile);
