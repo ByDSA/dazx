@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { spawn } from "node:child_process";
 import { $ } from "../../core.js";
+import { isInstalledAsync } from "../bash/index.js";
 
 async function requireMongoTools() {
   if (!(await isInstalledMongoTools())) {
@@ -26,12 +27,7 @@ async function requireMongoTools() {
 }
 
 async function isInstalledMongoTools() {
-  $.verbose = false;
-  const p = await $`command -v mongodump &>/dev/null`;
-
-  $.verbose = true;
-
-  return p.exitCode === 0;
+  return isInstalledAsync("mongodump");
 }
 
 type Params = {
