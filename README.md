@@ -1,4 +1,6 @@
-# 🐚 dazx
+<a href="https://webpod.dev/?from=zx"><img src="https://webpod.dev/img/banner.png" alt="Webpod - deploy JavaScript apps" width="190" align="right"></a>
+
+# 🐚 zx
 
 ```js
 #!/usr/bin/env dazx
@@ -169,6 +171,13 @@ cd('/tmp')
 await $`pwd` // => /tmp
 ```
 
+Like `echo`, in addition to `string` arguments, `cd` accepts and trims
+trailing newlines from `ProcessOutput` enabling common idioms like:
+
+```js
+cd(await $`mktemp -d`)
+```
+
 ### `fetch()`
 
 A wrapper around the [node-fetch](https://www.npmjs.com/package/node-fetch)
@@ -324,8 +333,13 @@ console.log(YAML.parse('foo: bar').foo)
 
 ### `minimist` package
 
-The [minimist](https://www.npmjs.com/package/minimist) package available
-as global const `argv`.
+The [minimist](https://www.npmjs.com/package/minimist) package.
+
+```js
+let myCustomArgv = minimist(process.argv.slice(2), { boolean: ["force", "help"] })
+```
+
+A minimist-parsed version of the process args as `argv` (parsed without any config).
 
 ```js
 if (argv.someFlag) {
